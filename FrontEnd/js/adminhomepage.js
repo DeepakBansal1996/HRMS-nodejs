@@ -15,8 +15,9 @@ function showprojects(){
 				 row.insertCell(1).innerHTML=data.project[i].Projectname;
 				 row.insertCell(2).innerHTML=data.project[i].Projectdesc;
                  row.insertCell(3).innerHTML=data.project[i].Techstack; 
-				 row.insertCell(4).innerHTML="<input type='button' value='Update Project' class='btn btn-lg btn-warning editbutton' onclick=\'updateproject(\""+data.project[i]._id+"\")'>";
+				 row.insertCell(4).innerHTML="<input type='button' value='Update Project' class='btn btn-lg btn-warning mx-2'data-toggle='modal' data-target='#updateProjects' editbutton' onclick=\'getprojectdetails(\""+data.project[i]._id+"\")'>";
 				 row.insertCell(5).innerHTML="<input type='button' value='Delete project' class=' btn btn-lg btn-danger deletebutton' onclick=\'deleteproject(\""+data.project[i]._id+"\")'>";
+                
 				     }
 		      } 
 		});
@@ -29,7 +30,8 @@ function adduser(){
 	var datafornewuser={
 		"Username": username,
 		"Password": password,
-		"Usertype": usertype
+		"Usertype": usertype,
+        "Skills": "none"
 		}
 	$.ajax({
 		url: 'http://localhost:5000/adminhomepage/adduser',
@@ -101,16 +103,23 @@ function addproject(){
         });
 }
 
-function updateproject(){
-		var projectname = document.getElementById("projectnameaddproject").value;
-		var projectdesc = document.getElementById("projectdescaddproject").value;
-		var techstack = document.getElementById("techstackaddproject").value;
-		var recommendations = document.getElementById("recommendationsaddproject").value;
+function getprojectdetails(Id){
+    console.log(Id)
+        document.getElementById("projectnameupdateproject").value=data.project[Id].Projectname;
+		document.getElementById("projectdescupdateproject").value=data.project[Id].Projectdesc;
+		document.getElementById("techstackupdateproject").value=data.project[Id].Techstack;
+		document.getElementById("recommendationsupdateproject").value=data.project[Id].Userassigned;
+}
+function updateproject(Id){
+		var projectname = document.getElementById("projectnameupdateproject").value;
+		var projectdesc = document.getElementById("projectdescupdateproject").value;
+		var techstack = document.getElementById("techstackupdateproject").value;
+		var recommendations = document.getElementById("recommendationsupdateproject").value;
 	var dataforupdateproject={
 		"Projectname" : projectname,
 		"Projectdesc": projectdesc,
 		"Techstack": techstack,
-		"Usersassigned": recommendations,
+		"Usersassigned": recommendations
 	}
 	$.ajax({
 		url: 'http://localhost:5000/adminhomepage/updateproject/'+Id,
@@ -124,6 +133,8 @@ function updateproject(){
 							}				
         });
 }
+
+
 
 function deleteproject(Id){
 	alert("are you sure you want to delete this project, Changes may be not be reversible");

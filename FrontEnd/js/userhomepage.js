@@ -1,3 +1,6 @@
+Id="dee";
+
+
 var getURL = function getURL(parm){
             var Pageurl = window.location.search.substring(1),
             URLVariables = Pageurl.split('&'),
@@ -14,9 +17,9 @@ var getURL = function getURL(parm){
  var Id=getURL('Id');
 //console.log(Id);
 
-function FillDetails(){
+function FillDetails(Id){
 				$.ajax	({
-				url: 'http://localhost:50052/api/EmployeeDetail/'+Id,
+				url: 'http://localhost:5000/userhomepage/getuserdetails/'+Id,
 				type: 'GET',
 				dataType: 'json', 
 				success: function(EmpDetail){ 
