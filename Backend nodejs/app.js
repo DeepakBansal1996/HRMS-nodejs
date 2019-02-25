@@ -70,31 +70,43 @@ app.get('/adminhomepage/getprojects', (req, res)=>{
 });
 //route for userhomepage GETAPI
 //Showing userdet ails(profile picture, name, skills) to the user usertype
-app.get('/userhomepage/getuserdetails', (req, res)=>{
-    var usertoken = jwt.verify(req.get('x-auth-usertoken'),'bootcamp');
-    console.log(usertoken);
-    User.findOne({username:usertoken.username},(err,user)=>{
-      var res_data = {skills:user.skills,name:user.name,username:user.username};
-      res.json(res_data);
+//deepak
+app.get('/userhomepage/getuserdetails/:Username', (req, res)=>{
+    usermod.findOne({
+	Username:req.params.Username
+})
+.then(users => { res.send({users:users})})
     });
+//end deepak
 });
 
 /*route for Userhomepage DeleteApi
 app.delete('/adminhomepage', (req, res)=>{
     console.log('Delete Projects or admin details');
 )};
-//route for Adminhomepage DeleteApi
-app.delete('/adminhomepage', (req, res)=>{
-console.log('Delete Projects or admin details');
-)};*/
+*/
 
-       User.findOneAndUpdate({"Username":req.body.Username}, {Username:req.body.Username,Password:req.body.Password},{new: true}, (err,user)=>{
-        if( !user) {
-                  return res.status(404).send( "Username not found" );
-              }
-          console.log("saved");
-          res.json(user);
+
+
+//deepak
+//update user skills
+app.put('/adminhomepage/updateUserskills/:Username',(req,res)=>{
+usermod.findOne({
+  Username:req.params.Username
+})
+
+.then(users => {
+      
+      users.Username = req.body.Username;
+      users.Password = req.body.Password;
+      users.Usertype = req.body.Usertype;
+      users.Skills = req.body["Skills[]"];
+      console.log(req.body["Skills[]"]); 
+      users.save()
       });
+
+   });
+//end deepak       
 
 
 //route for Adminhomepage Add User
@@ -138,7 +150,7 @@ app.post('/adminhomepage/addprojects', (req, res)=>{
 	const project={
    	Projectname:(req.body.Projectname),
    	Projectdesc:(req.body.Projectdesc),
-   	Techstack:(req.body.Techstack),
+   	Techstack:(req.body['Techstack[]']),
    	Userassigned:(req.body.Usersassigned)
    }
    new projectmodel(project)
@@ -148,24 +160,15 @@ app.post('/adminhomepage/addprojects', (req, res)=>{
    //end deepak
    });
    
-//route for Adminhomepage upadte Project
-//Admin can update Projects to the Project collection using this route
-app.put('/adminhomepage/updateprojects', (req, res)=>{
-    console.log(req.body);
-        // start deepak
-	const project={
-   	Projectname:(req.body.Projectname),
-   	Projectdesc:(req.body.Projectdesc),
-   	Techstack:(req.body.Techstack),
-   	Userassigned:(req.body.Usersassigned)
-   }
-   new projectmodel(project)
-   .save()
-   .then(()=> console.log('done.........'))
-   .catch(err =>console.log(err));
-   //end deepak
-});
 
+//deepak
+//get projects api
+app.get('/adminhomepage/getprojects', (req,res)=>{
+
+projectmod.find({})
+.then(project => { res.send({project:project})})
+});
+//end deepak
 //route for Adminhomepage delete Project
 //Admin can delete Projects to the Project collection using this route
 app.delete('/adminhomepage/deleteprojects/:id', (req,res)=>{
@@ -175,12 +178,7 @@ projectmodel.deleteOne({_id:req.params.id})
 .catch(err =>console.log(err));
 });
    
-//route for userhomepage adding new skills
-//user can update his skill through this route
-app.post('/userhomepage/getuserdetails', (req, res)=>{
- console.log('get userdetails');
-
-});   
+ 
    
    
 //route for userhomepage adding new skills

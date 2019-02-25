@@ -1,134 +1,80 @@
-Id="dee";
+Id="we";
+
+var temp=null;
 
 
-var getURL = function getURL(parm){
-            var Pageurl = window.location.search.substring(1),
-            URLVariables = Pageurl.split('&'),
-                ParameterName, i;
-            
-        for(i=0; i<URLVariables.length;i++){
-            ParameterName = URLVariables[i].split('=');
-            
-            if(ParameterName[0] == parm){
-                return ParameterName[1]==undefined ? true : decodeURIComponent(ParameterName[1]);
-            }
-        }
-    }
- var Id=getURL('Id');
-//console.log(Id);
-
-function FillDetails(Id){
-				$.ajax	({
+function FillDetails(){
+				$.ajax({
 				url: 'http://localhost:5000/userhomepage/getuserdetails/'+Id,
 				type: 'GET',
 				dataType: 'json', 
-				success: function(EmpDetail){ 
-				//console.log(EmpDetail);
-									document.getElementById("Employee Id").value=EmpDetail.Id;
-									document.getElementById("First Name").value=EmpDetail.firstname;
-									document.getElementById("Last Name").value=EmpDetail.lastname;
-									document.getElementById("Father Name").value=EmpDetail.fathername;
-									document.getElementById("Email").value=EmpDetail.Email;
-										}
-						});
-};
+				success: function(data)
+				{
+                                 temp=data; 
+                    
+                                  console.log(data.users.Username);
+                                  document.getElementById("displayUsername").innerHTML="@"+data.users.Username;     
+                       		  var table=document.getElementById("mytable");
+                                  console.log(data.users.Skills);
+				  for (var i=0; i<data.users.Skills.length; i++){
+                  		 	var row=table.insertRow(table.length);
+                                        row.insertCell(0).innerHTML=i+1;
+				        row.insertCell(1).innerHTML=data.users.Skills;
+                                }
+                               }		      
+		              });
+}
 
-function UpdateDetails(){
-	var employeeid = document.getElementById("Employee Id").value;
-	var empid=employeeid.valueOf();
-	var firstname = document.getElementById("First Name").value;
-	var fname=firstname.valueOf();
-	var lastname = document.getElementById("Last Name").value;
-	var lname=lastname.valueOf();
-	var fathername = document.getElementById("Father Name").value;
-	var fathersname=fathername.valueOf();
-	var email = document.getElementById("Email").value;
-	var mail=email.valueOf();
-	var phone = document.getElementById("Phone Number").value;
-	var mobile=phone.valueOf();
-	var graddegree = document.getElementById("Graduationdegree").value;
-	var degree=graddegree.valueOf();
-	var gradmarks = document.getElementById("Graduationpercentage").value;
-	var twelfthboard = document.getElementById("Twelfthboard").value;
-	var board12=twelfthboard.valueOf();
-	var twelfthmarks = document.getElementById("Twelfthpercentage").value;
-	var tenthboard = document.getElementById("Tenthboard").value;
-	var board10=tenthboard.valueOf();
-	var tenthmarks = document.getElementById("Tenthpercentage").value;
-	var country = document.getElementById("Country").value;
-	var region=country.valueOf();
-	var dob = document.getElementById("Dob").value;
-	var gender = document.getElementById("Gender").value;
-	var sex=gender.valueOf();
-	var designation = document.getElementById("Designation").value;
-	var profile=designation.valueOf();
-	var address = document.getElementById("Address").value;
-	
-			var datafor_EmployeeDetail={
-								"EducationDetail": {
-								"Id": empid,
-								"TenthBoard": board10,
-								"Tenthmarks": tenthmarks,
-								"Twelfthboard": board12,
-								"Twelfthmarks": twelfthmarks,
-								"GraduationDegree": degree,
-								"GraduationMarks": gradmarks,
-									
-								},
-								"Id": empid,
-								"firstname":fname,
-								"lastname":lname,
-								"fathername": fathersname,
-								"Email":mail,
-								"Phone": mobile,
-								"country":region,
-								"dob":dob, 
-								"gender": sex,
-								"designation": profile,
-								"address": address,
-								};
-						$.ajax({
-							url: 'http://localhost:50052/api/EmployeeDetail/'+Id,
-							data: datafor_EmployeeDetail,
-							type: 'PUT',
-							dataType: 'json', 
-							success: function(response){ 
-													alert("Changes have been updated as per your request");
-													window.location="user list.html"
-													}	
-								});
-};
-//console.log(Id);
+				     
+				
+function addskill(){ 
+    var values=$('#showselect').val();
 
-function DeleteUser(Id){
-	//console.log(Id);
-		//to delete Education details
-		alert("Are you sure, You want to delete the user data from database.");
-		$.ajax({
-		url: 'http://localhost:50052/api/EducationDetail/'+Id,
-        type: 'DELETE',
+    var temp3= values.concat( temp.users.Skills);
+    
+    
+    //console.log(temp.users.Username);
+      //console.log(temp.users.Skills);
+    var data=
+         {
+        "Username": temp.users.Username,
+        "Password": temp.users.Password,
+        "Usertype": temp.users.Usertype,
+        "Skills": temp3
+    }
+
+    //console.log(data);
+
+   $.ajax({
+		url: 'http://localhost:5000/adminhomepage/updateUserskills/'+Id,
+        type: 'PUT',
         dataType: 'json',
-        success: function(deleted){
-								console.log("Education Details have been deleted");
-								}
+		data: data,
+        success: function(res)
+							{
+                              //  console.log(res);
+							alert("Project has been updated succesfully");
+							//window.location="adminhomepage.html";
+							}				
         });
-		//to delete Signup details
-		$.ajax({
-		url: 'http://localhost:50052/api/AuthenticateUser/'+Id,
-        type: 'DELETE',
-        dataType: 'json',
-        success: function(deleted){
-								console.log("Authentication Details have been deleted");
-								}
-        });
-		//to delete Employee details
-		$.ajax({
-		url: 'http://localhost:50052/api/EmployeeDetail/'+Id,
-        type: 'DELETE',
-        dataType: 'json',
-        success: function(deleted){
-								alert("User Details Have been removed from the database");
-								window.location.href = "user list.html";
-								}
-        });
+
+}
+
+function showSkills(){
+    $.ajax({
+        url: 'http://localhost:5000/userhomepage/getskills',
+        type: 'GET',
+        dataType: 'json', 
+        success: function(data){
+            console.log("pallavi",data);
+            var skills = data.skills;
+            for(skillNumber in skills)
+                {
+                    var skill = skills[skillNumber]['Skillsname'];
+                    $("#showselect").append('<option value = "'+skill+'">'+skill+'</option>' )
+                }
+
+    
+        }
+    });
 }

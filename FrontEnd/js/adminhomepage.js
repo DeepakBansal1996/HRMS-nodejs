@@ -15,13 +15,31 @@ function showprojects(){
 				 row.insertCell(1).innerHTML=data.project[i].Projectname;
 				 row.insertCell(2).innerHTML=data.project[i].Projectdesc;
                  row.insertCell(3).innerHTML=data.project[i].Techstack; 
-				 row.insertCell(4).innerHTML="<input type='button' value='Update Project' class='btn btn-lg btn-warning mx-2'data-toggle='modal' data-target='#updateProjects' editbutton' onclick=\'getprojectdetails(\""+data.project[i]._id+"\")'>";
+				 row.insertCell(4).innerHTML="<input type='button' value='Update Project' class='btn btn-lg btn-warning mx-2'data-toggle='modal' data-target='#updateProjects' editbutton' onclick=\'getprojectdetails(\""+data.project[i]+"\")'>";
 				 row.insertCell(5).innerHTML="<input type='button' value='Delete project' class=' btn btn-lg btn-danger deletebutton' onclick=\'deleteproject(\""+data.project[i]._id+"\")'>";
                 
 				     }
 		      } 
 		});
 }
+function createtechstack(){
+     $.ajax({
+        url: 'http://localhost:5000/userhomepage/getskills',
+        type: 'GET',
+        dataType: 'json', 
+        success: function(data){
+            var skills = data.skills;
+            for(skillNumber in skills)
+                {
+                    var skill = skills[skillNumber]['Skillsname'];
+                    $("#TechStack").append('<option value = "'+skill+'">'+skill+'</option>' )
+                }
+
+    
+        }
+    });
+}
+
 
 function adduser(){
 	var username = document.getElementById("useradduser").value;
@@ -46,12 +64,13 @@ function adduser(){
         });
 }
 
+
 function addskill(){
 	var skillname = document.getElementById("skillnameaddskill").value;
-	//var skilldesc = document.getElementById("skilldescaddskill").value;
+	
 	var datafornewskill={
-		"Skillname": skillname
-		//"Skilldescription": skilldesc
+		"Skillsname": skillname
+		
 	}
 	$.ajax({
 		url: 'http://localhost:5000/adminhomepage/addskill',
@@ -65,25 +84,14 @@ function addskill(){
 								}
         });
 }
-/*
-//made by deepak start
-$.ajax({
-	url: 'http://localhost:5000/addskills',
-        type: 'POST',
-        dataType: 'json',
-		data: datafornewskill,
-        success: function(res)
-            {
-            alert("ho gya");
-            }
-        });
-	}//end
-	*/
+
 function addproject(){
+    
 		var projectname = document.getElementById("projectnameaddproject").value;
 		var projectdesc = document.getElementById("projectdescaddproject").value;
-		var techstack = document.getElementById("techstackaddproject").value;
+		var techstack = $('#TechStack').val(); //document.getElementById("techstackaddproject").value
 		var recommendations = document.getElementById("recommendationsaddproject").value;
+         console.log(techstack);
 	var datafornewproject={
 		"Projectname" : projectname,
 		"Projectdesc": projectdesc,
@@ -103,13 +111,7 @@ function addproject(){
         });
 }
 
-function getprojectdetails(Id){
-    console.log(Id)
-        document.getElementById("projectnameupdateproject").value=data.project[Id].Projectname;
-		document.getElementById("projectdescupdateproject").value=data.project[Id].Projectdesc;
-		document.getElementById("techstackupdateproject").value=data.project[Id].Techstack;
-		document.getElementById("recommendationsupdateproject").value=data.project[Id].Userassigned;
-}
+
 function updateproject(Id){
 		var projectname = document.getElementById("projectnameupdateproject").value;
 		var projectdesc = document.getElementById("projectdescupdateproject").value;
